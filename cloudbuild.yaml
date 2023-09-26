@@ -1,7 +1,9 @@
 steps:
+# Step 0: Create a virtual environment named 'local'
 - name: 'python'
   args: ['/usr/local/bin/python', '-m', 'venv', 'local']
 
+# Step 1: Activate the virtual environment, install AWS CLI and then use 'make' to install the requirements
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   args:
@@ -11,15 +13,17 @@ steps:
     pip install awscli
     /usr/bin/make requirements
 
+# Step 2: install zip, check the environment, and lint the code
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   args:
   - '-c'
   - |
-    source ./local/bin/activate
     apt update && apt install zip -qq
+    source ./local/bin/activate
     /usr/bin/make check lint
 
+# Step 3: Run tests
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   args:
@@ -28,6 +32,7 @@ steps:
     source ./local/bin/activate
     /usr/bin/make test
 
+# Step 4: Install zip, activate the virtual environment, and build the project
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   args:
@@ -37,6 +42,7 @@ steps:
     source ./local/bin/activate
     /usr/bin/make build
 
+# Step 5: Deploy to staging using AWS CLI (AWS secrets are injected from Secret Manager)
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
@@ -48,34 +54,40 @@ steps:
     source ./local/bin/activate
     /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
+# Step 6: Test the deployed function's staging environment
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
   args: ['-c', "/usr/bin/make test URL=$_STAGING_URL BUILD_NUMBER=$BUILD_ID"]
 
+# Step 7: Deploy to production using AWS CLI (AWS secrets are injected from Secret Manager)
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
   - 'AWS_DEFAULT_REGION=$_AWS_DEFAULT_REGION'
+  - 'FUNCTION=$_PRODUCTION_FUNCTION'
   secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
   args:
   - '-c'
   - |
     source ./local/bin/activate
-    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$FUNCTION VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
+# Step 8: Test the deployed function's production environment
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
   args: ['-c', "/usr/bin/make test URL=$_PRODUCTION_URL BUILD_NUMBER=$BUILD_ID"]
 
+# Substitutions: default values for environment variables that can be overridden when triggering the build
 substitutions:
   _AWS_DEFAULT_REGION: us-east-2
-  _STAGING_FUNCTION_NAME: ventura-4-staging	
+  _STAGING_FUNCTION_NAME: ventura-4-staging    
   _STAGING_URL: https://jv7qmmnbs3ogwhisxftrvrbxte0axvwu.lambda-url.us-east-2.on.aws/
-  _PRODUCTION_FUNCTION_NAME: ventura-4-production	
+  _PRODUCTION_FUNCTION_NAME: ventura-4-production   
   _PRODUCTION_URL: https://kca62rvlvf6erpzn4pcfdppbae0qgpqn.lambda-url.us-east-2.on.aws/
 
+# Secrets: Fetch AWS secrets from Google Cloud Secret Manager
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/AWS_ACCESS_KEY_ID/versions/latest
