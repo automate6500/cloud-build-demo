@@ -65,13 +65,12 @@ steps:
   entrypoint: '/usr/bin/bash'
   env: 
   - 'AWS_DEFAULT_REGION=$_AWS_DEFAULT_REGION'
-  - 'FUNCTION=$_PRODUCTION_FUNCTION'
   secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
   args:
   - '-c'
   - |
     source ./local/bin/activate
-    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$FUNCTION VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
 # Step 8: Test the deployed function's production environment
 - name: 'python'
