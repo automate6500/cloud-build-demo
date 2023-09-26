@@ -17,6 +17,7 @@ steps:
   - '-c'
   - |
     source ./local/bin/activate
+    apt update && apt install zip -qq
     /usr/bin/make check lint
 
 - name: 'python'
@@ -29,4 +30,9 @@ steps:
 
 - name: 'python'
   entrypoint: 'bash'
-  args: ['/usr/bin/make', 'build']
+  args:
+  - '-c'
+  - |
+    apt update && apt install zip -qq
+    source ./local/bin/activate
+    /usr/bin/make test
