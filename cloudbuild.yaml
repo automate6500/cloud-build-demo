@@ -57,7 +57,6 @@ steps:
 # Step 6: Test the deployed function's staging environment
 - name: 'python'
   entrypoint: '/usr/bin/bash'
-  env: 
   args:
   - '-c'
   - |
@@ -78,7 +77,6 @@ steps:
 # Step 8: Test the deployed function's production environment
 - name: 'python'
   entrypoint: '/usr/bin/bash'
-  env: 
   args:
   - '-c'
   - |
