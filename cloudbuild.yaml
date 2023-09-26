@@ -4,7 +4,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     python3 -m venv local
     source ./local/bin/activate
     make requirements
@@ -14,7 +14,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     source ./local/bin/activate
     pip install awscli
     make check lint
@@ -24,7 +24,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     source ./local/bin/activate
     make test
 
@@ -33,7 +33,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     apt-get install -y zip
     make build
 
@@ -42,7 +42,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     pip install awscli
     make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
@@ -51,7 +51,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     make testdeployment URL=$_STAGING_URL VERSION=$COMMIT_SHA
 
 - name: 'ubuntu'
@@ -59,7 +59,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential    
+    apt update && apt install -qq build-essential    
     pip install awscli
     make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
@@ -68,7 +68,7 @@ steps:
   args:
   - '-c'
   - |
-    apt update && sudo apt install -qq build-essential
+    apt update && apt install -qq build-essential
     make testdeployment URL=$_PRODUCTION_URL VERSION=$COMMIT_SHA
 
 substitutions:
