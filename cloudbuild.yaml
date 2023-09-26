@@ -1,78 +1,32 @@
 steps:
-- name: 'ubuntu'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    apt update && apt install -qq build-essential
-    python3 -m venv local
-    source ./local/bin/activate
-    make requirements
+- name: 'gcr.io/cloud-builders/python'
+  args: ['python3', '-m', 'venv', 'local']
 
-- name: 'ubuntu'
+- name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    apt update && apt install -qq build-essential
     source ./local/bin/activate
     pip install awscli
-    make check lint
+    /usr/bin/make requirements
 
-- name: 'ubuntu'
+- name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    apt update && apt install -qq build-essential
     source ./local/bin/activate
-    make test
+    /usr/bin/make check lint
 
-- name: 'ubuntu'
+- name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    apt update && apt install -qq build-essential
-    apt-get install -y zip
-    make build
+    source ./local/bin/activate
+    /usr/bin/make test
 
-- name: 'ubuntu'
+- name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    apt update && apt install -qq build-essential
-    pip install awscli
-    make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
-
-- name: 'ubuntu'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    apt update && apt install -qq build-essential
-    make testdeployment URL=$_STAGING_URL VERSION=$COMMIT_SHA
-
-- name: 'ubuntu'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    apt update && apt install -qq build-essential    
-    pip install awscli
-    make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
-
-- name: 'ubuntu'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    apt update && apt install -qq build-essential
-    make testdeployment URL=$_PRODUCTION_URL VERSION=$COMMIT_SHA
-
-substitutions:
-    _PRODUCTION_URL: https://kca62rvlvf6erpzn4pcfdppbae0qgpqn.lambda-url.us-east-2.on.aws/
-    _PRODUCTION_FUNCTION_NAME: ventura-4-production
-    _STAGING_FUNCTION_NAME: ventura-4-staging
-    _STAGING_URL: https://jv7qmmnbs3ogwhisxftrvrbxte0axvwu.lambda-url.us-east-2.on.aws/
+  args: ['/usr/bin/make', 'build']
