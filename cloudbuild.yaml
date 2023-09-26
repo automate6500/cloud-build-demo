@@ -58,7 +58,7 @@ steps:
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
-  args: ['-c', "/usr/bin/make test URL=$_STAGING_URL BUILD_NUMBER=$BUILD_ID"]
+  args: ['-c', "/usr/bin/make testdeployment URL=$_STAGING_URL BUILD_NUMBER=$BUILD_ID"]
 
 # Step 7: Deploy to production using AWS CLI (AWS secrets are injected from Secret Manager)
 - name: 'python'
@@ -76,7 +76,7 @@ steps:
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
-  args: ['-c', "/usr/bin/make test URL=$_PRODUCTION_URL BUILD_NUMBER=$BUILD_ID"]
+  args: ['-c', "/usr/bin/make testdeployment URL=$_PRODUCTION_URL BUILD_NUMBER=$BUILD_ID"]
 
 # Substitutions: default values for environment variables that can be overridden when triggering the build
 substitutions:
