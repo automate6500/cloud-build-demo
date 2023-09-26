@@ -1,9 +1,9 @@
 steps:
 - name: 'python'
-  args: ['python', '-m', 'venv', 'local']
+  args: ['/usr/local/bin/python', '-m', 'venv', 'local']
 
 - name: 'python'
-  entrypoint: 'bash'
+  entrypoint: '/usr/bin/bash'
   args:
   - '-c'
   - |
@@ -12,7 +12,7 @@ steps:
     /usr/bin/make requirements
 
 - name: 'python'
-  entrypoint: 'bash'
+  entrypoint: '/usr/bin/bash'
   args:
   - '-c'
   - |
@@ -21,7 +21,7 @@ steps:
     /usr/bin/make check lint
 
 - name: 'python'
-  entrypoint: 'bash'
+  entrypoint: '/usr/bin/bash'
   args:
   - '-c'
   - |
@@ -29,10 +29,28 @@ steps:
     /usr/bin/make test
 
 - name: 'python'
-  entrypoint: 'bash'
+  entrypoint: '/usr/bin/bash'
   args:
   - '-c'
   - |
     apt update && apt install zip -qq
     source ./local/bin/activate
-    /usr/bin/make test
+    /usr/bin/make build
+
+- name: 'python'
+  entrypoint: '/usr/bin/bash'
+  env: 
+  - 'AWS_DEFAULT_REGION=us-east-2'
+  - 'FUNCTION=ventura-4-staging'
+  secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
+  args:
+  - '-c'
+  - |
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/AWS_ACCESS_KEY_ID/versions/latest
+    env: 'AWS_ACCESS_KEY_ID'
+  - versionName: projects/$PROJECT_ID/secrets/AWS_SECRET_ACCESS_KEY/versions/latest
+    env: 'AWS_SECRET_ACCESS_KEY'
