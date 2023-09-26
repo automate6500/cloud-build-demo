@@ -40,14 +40,53 @@ steps:
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
-  - 'AWS_DEFAULT_REGION=us-east-2'
-  - 'FUNCTION=ventura-4-staging'
+  - 'AWS_DEFAULT_REGION=$_AWS_DEFAULT_REGION'
+  - 'FUNCTION=$_STAGING_FUNCTION'
   secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
   args:
   - '-c'
   - |
     source ./local/bin/activate
-    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$FUNCTION VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+
+- name: 'python'
+  entrypoint: '/usr/bin/bash'
+  env: 
+  - 'URL=$_STAGING_URL'
+  args:
+  - '-c'
+  - |
+    source ./local/bin/activate
+    /usr/bin/make test URL=$URL BUILD_NUMBER=$BUILD_ID
+
+- name: 'python'
+  entrypoint: '/usr/bin/bash'
+  env: 
+  - 'AWS_DEFAULT_REGION=$_AWS_DEFAULT_REGION'
+  - 'FUNCTION=$_PRODUCTION_FUNCTION'
+  secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
+  args:
+  - '-c'
+  - |
+    source ./local/bin/activate
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$FUNCTION VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+
+- name: 'python'
+  entrypoint: '/usr/bin/bash'
+  env: 
+  - 'URL=$_PRODUCTION_URL'
+  args:
+  - '-c'
+  - |
+    source ./local/bin/activate
+    /usr/bin/make test URL=$URL BUILD_NUMBER=$BUILD_ID
+
+substitutions:
+  _AWS_DEFAULT_REGION: us-east-2
+  _STAGING_FUNCTION_NAME: ventura-4-staging	
+  _STAGING_URL: https://jv7qmmnbs3ogwhisxftrvrbxte0axvwu.lambda-url.us-east-2.on.aws/
+  _PRODUCTION_FUNCTION_NAME: ventura-4-production	
+  _PRODUCTION_URL: https://kca62rvlvf6erpzn4pcfdppbae0qgpqn.lambda-url.us-east-2.on.aws/
 
 availableSecrets:
   secretManager:
