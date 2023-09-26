@@ -1,27 +1,23 @@
 steps:
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    echo "Fetching AWS keys from Secret Manager"
-    gcloud secrets versions access latest --secret=AWS_ACCESS_KEY_ID > /workspace/aws_access_key_id.txt
-    gcloud secrets versions access latest --secret=AWS_SECRET_ACCESS_KEY > /workspace/aws_secret_access_key.txt
     python3 -m venv local
     source ./local/bin/activate
     make requirements
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
     source ./local/bin/activate
-    apt-get install -y zip
     pip install awscli
     make check lint
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -29,7 +25,7 @@ steps:
     source ./local/bin/activate
     make test
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -37,7 +33,7 @@ steps:
     apt-get install -y zip
     make build
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -47,14 +43,14 @@ steps:
     pip install awscli
     make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
     make testdeployment URL=$_STAGING_URL VERSION=$COMMIT_SHA
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -64,7 +60,7 @@ steps:
     pip install awscli
     make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
-- name: 'python:3'
+- name: 'ubuntu'
   entrypoint: 'bash'
   args:
   - '-c'
