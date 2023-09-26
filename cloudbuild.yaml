@@ -41,23 +41,17 @@ steps:
   entrypoint: '/usr/bin/bash'
   env: 
   - 'AWS_DEFAULT_REGION=$_AWS_DEFAULT_REGION'
-  - 'FUNCTION=$_STAGING_FUNCTION'
   secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
   args:
   - '-c'
   - |
     source ./local/bin/activate
-    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$FUNCTION VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
-  - 'URL=$_STAGING_URL'
-  args:
-  - '-c'
-  - |
-    source ./local/bin/activate
-    /usr/bin/make test URL=$URL BUILD_NUMBER=$BUILD_ID
+  args: ['-c', "/usr/bin/make test URL=$_STAGING_URL BUILD_NUMBER=$BUILD_ID"]
 
 - name: 'python'
   entrypoint: '/usr/bin/bash'
@@ -74,12 +68,7 @@ steps:
 - name: 'python'
   entrypoint: '/usr/bin/bash'
   env: 
-  - 'URL=$_PRODUCTION_URL'
-  args:
-  - '-c'
-  - |
-    source ./local/bin/activate
-    /usr/bin/make test URL=$URL BUILD_NUMBER=$BUILD_ID
+  args: ['-c', "/usr/bin/make test URL=$_PRODUCTION_URL BUILD_NUMBER=$BUILD_ID"]
 
 substitutions:
   _AWS_DEFAULT_REGION: us-east-2
