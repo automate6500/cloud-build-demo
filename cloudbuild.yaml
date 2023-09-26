@@ -4,6 +4,9 @@ steps:
   args:
   - '-c'
   - |
+    echo "Fetching AWS keys from Secret Manager"
+    gcloud secrets versions access latest --secret=AWS_ACCESS_KEY_ID > /workspace/aws_access_key_id.txt
+    gcloud secrets versions access latest --secret=AWS_SECRET_ACCESS_KEY > /workspace/aws_secret_access_key.txt 
     python3 -m venv local
     source ./local/bin/activate
     make requirements
@@ -36,31 +39,41 @@ steps:
   args:
   - '-c'
   - |
-    make deploy PLATFORM="Google Cloud Build" FUNCTION=$STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    export AWS_ACCESS_KEY_ID=$(cat /workspace/aws_access_key_id.txt)
+    export AWS_SECRET_ACCESS_KEY=$(cat /workspace/aws_secret_access_key.txt)  
+    make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
 - name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    make testdeployment URL=$STAGING_URL VERSION=$COMMIT_SHA
+    make testdeployment URL=$_STAGING_URL VERSION=$COMMIT_SHA
 
 - name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    make deploy PLATFORM="Google Cloud Build" FUNCTION=$PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
+    export AWS_ACCESS_KEY_ID=$(cat /workspace/aws_access_key_id.txt)
+    export AWS_SECRET_ACCESS_KEY=$(cat /workspace/aws_secret_access_key.txt)  
+    make deploy PLATFORM="Google Cloud Build" FUNCTION=$_PRODUCTION_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
 - name: 'gcr.io/cloud-builders/python'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    make testdeployment URL=$PRODUCTION_URL VERSION=$COMMIT_SHA
+    make testdeployment URL=$_PRODUCTION_URL VERSION=$COMMIT_SHA
 
 artifacts:
   objects:
     location: 'lambda.zip'
     paths:
     - 'lambda.zip'
+
+substitutions:
+    _PRODUCTION_URL: https://kca62rvlvf6erpzn4pcfdppbae0qgpqn.lambda-url.us-east-2.on.aws/
+    _PRODUCTION_FUNCTION_NAME: ventura-4-production
+    _STAGING_FUNCTION_NAME: ventura-4-staging
+    _STAGING_URL: https://jv7qmmnbs3ogwhisxftrvrbxte0axvwu.lambda-url.us-east-2.on.aws/
