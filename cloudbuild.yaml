@@ -1,8 +1,8 @@
 steps:
-- name: 'gcr.io/cloud-builders/python'
-  args: ['python3', '-m', 'venv', 'local']
+- name: 'python'
+  args: ['python', '-m', 'venv', 'local']
 
-- name: 'gcr.io/cloud-builders/python'
+- name: 'python'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -11,7 +11,7 @@ steps:
     pip install awscli
     /usr/bin/make requirements
 
-- name: 'gcr.io/cloud-builders/python'
+- name: 'python'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -19,7 +19,7 @@ steps:
     source ./local/bin/activate
     /usr/bin/make check lint
 
-- name: 'gcr.io/cloud-builders/python'
+- name: 'python'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -27,6 +27,6 @@ steps:
     source ./local/bin/activate
     /usr/bin/make test
 
-- name: 'gcr.io/cloud-builders/python'
+- name: 'python'
   entrypoint: 'bash'
   args: ['/usr/bin/make', 'build']
