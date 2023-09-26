@@ -46,6 +46,7 @@ steps:
   args:
   - '-c'
   - |
+    source ./local/bin/activate
     /usr/bin/make deploy PLATFORM="Google Cloud Build" FUNCTION=$_STAGING_FUNCTION_NAME VERSION=$COMMIT_SHA BUILD_NUMBER=$BUILD_ID
 
 availableSecrets:
