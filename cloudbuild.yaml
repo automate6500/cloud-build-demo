@@ -85,10 +85,10 @@ steps:
 # Substitutions: default values for environment variables that can be overridden when triggering the build
 substitutions:
   _AWS_DEFAULT_REGION: us-east-2
-  _STAGING_FUNCTION_NAME: sample-application-staging    
+  _STAGING_FUNCTION_NAME: sample-application-2-staging	
   _STAGING_URL: https://azs4gxn2nnjgxmkvtb4v76hgs40wpxwj.lambda-url.us-east-2.on.aws/
-  _PRODUCTION_FUNCTION_NAME: sample-application-production   
-  _PRODUCTION_URL: https://fw7jsnz32x642xzkza355oa72e0wzpcf.lambda-url.us-east-2.on.aws/
+  _PRODUCTION_FUNCTION_NAME: sample-application-2-production	
+  _PRODUCTION_URL: https://ydzt4yasqdluh2ukogmrw5iulm0xylod.lambda-url.us-east-2.on.aws/
 
 # Secrets: Fetch AWS secrets from Google Cloud Secret Manager
 availableSecrets:
